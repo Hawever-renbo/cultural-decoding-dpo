@@ -1,0 +1,123 @@
+{
+ "generated_at": "2026-11-03T08:42:52",
+ "main_total": 8021,
+ "flagged_total": 172,
+ "main_by_version": {
+  "v1": 3865,
+  "v2": 4156
+ },
+ "main_by_version_type": {
+  "v1/对照": 648,
+  "v1/深读": 1367,
+  "v1/缺陷": 1850,
+  "v2/对照": 332,
+  "v2/抓重点": 566,
+  "v2/深读": 845,
+  "v2/缺陷": 2413
+ },
+ "flagged_by_version_type": {
+  "v1/对照": 24,
+  "v1/深读": 85,
+  "v1/缺陷": 63
+ },
+ "flag_reasons": {
+  "lost_keyword": 76,
+  "R1_strict": 95,
+  "dup_span": 1
+ },
+ "defect_share": {
+  "v1": {
+   "outside_word": 0.204,
+   "lost_qualifier": 0.2,
+   "lost_in_vivo": 0.196,
+   "overgeneralization": 0.181,
+   "misattached_connective": 0.118,
+   "category_confusion": 0.102
+  },
+  "v2": {
+   "imposed_connective": 0.182,
+   "outside_word": 0.176,
+   "lost_in_vivo": 0.158,
+   "overgeneralization": 0.158,
+   "lost_qualifier": 0.154,
+   "misattached_connective": 0.104,
+   "category_confusion": 0.068
+  }
+ },
+ "auc": {
+  "v1/深读": {
+   "n": 1367,
+   "len_auc": 1.0,
+   "bow_auc": 0.915
+  },
+  "v1/缺陷": {
+   "n": 1850,
+   "len_auc": 0.374,
+   "bow_auc": 0.674
+  },
+  "v1/对照": {
+   "n": 648,
+   "len_auc": 0.989,
+   "bow_auc": 0.92
+  },
+  "v1/全部": {
+   "n": 3865,
+   "len_auc": 0.699,
+   "bow_auc": 0.719
+  },
+  "v2/深读": {
+   "n": 845,
+   "len_auc": 1.0,
+   "bow_auc": 0.922
+  },
+  "v2/抓重点": {
+   "n": 566,
+   "len_auc": 0.115,
+   "bow_auc": 0.703
+  },
+  "v2/缺陷": {
+   "n": 2413,
+   "len_auc": 0.351,
+   "bow_auc": 0.722
+  },
+  "v2/对照": {
+   "n": 332,
+   "len_auc": 0.98,
+   "bow_auc": 0.88
+  },
+  "v2/全部": {
+   "n": 4156,
+   "len_auc": 0.501,
+   "bow_auc": 0.648
+  }
+ },
+ "calls": {
+  "其他(探针/译文等)": {
+   "calls": 3,
+   "cost_usd": 0.01
+  },
+  "试跑": {
+   "calls": 73,
+   "cost_usd": 3.17
+  },
+  "v1 全量": {
+   "calls": 2335,
+   "cost_usd": 93.36
+  },
+  "A/B v2": {
+   "calls": 121,
+   "cost_usd": 5.74
+  },
+  "v2 全量": {
+   "calls": 2485,
+   "cost_usd": 100.35
+  }
+ },
+ "calls_total": 5017,
+ "cost_total_usd": 202.64,
+ "cost_note": "cost = API 等价美元（claude -p 报的 total_cost_usd）；订阅额度内的调用不另收费，额外用量（extra credit）部分实付",
+ "units": {
+  "v1(含试跑)": 959,
+  "v2": 976
+ }
+}

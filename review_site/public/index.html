@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>编码对评审</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top" id="top" hidden>
+    <div class="top-inner">
+      <div class="top-row">
+        <div class="where">
+          <span id="pos" class="pos">第 – / – 对</span>
+          <label class="zhtoggle" title="在英文下面显示中文译文（只记在这台设备上）"><input type="checkbox" id="zhtoggle"> 显示中文</label>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="btn ghost" id="prev" title="上一对">‹ 上一对</button>
+          <button type="button" class="btn ghost" id="next" title="下一对">下一对 ›</button>
+          <button type="button" class="btn ghost warn" id="skip">不熟，跳过</button>
+        </div>
+      </div>
+      <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar"></div></div>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <p class="loading" id="loading">正在载入…</p>
+
+    <section class="err" id="err" hidden></section>
+
+    <details class="howto" id="howto">
+      <summary>怎么评（点开 / 收起）</summary>
+      <ul>
+        <li>先凭自己的判断选哪边读得更深，提交后才会看到我们的判断。</li>
+        <li>不必通读，每对建议 2–4 分钟。</li>
+        <li>不熟可以跳过（右上角「不熟，跳过」）。</li>
+        <li>两边的编码只在一处不同（标着「比较处」）。上面按引文 → 开放码 → 范畴 → 关系 → 核心范畴给出与它相关的那条链；其余编码两边相同，折叠在最下面。</li>
+        <li>比较处 A、B 并排，<mark class="hl">底色</mark>标出措辞的差别。请按内容判断，长短不代表深浅。</li>
+        <li>引语与编码是英文原文。勾选顶部「显示中文」，会在英文下面附上机器译文（以英文为准）。</li>
+        <li>键盘：<kbd>a</kbd> <kbd>b</kbd> <kbd>x</kbd> 选第 ① 题，<kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> 选第 ② 题，<kbd>Enter</kbd> 提交。</li>
+      </ul>
+    </details>
+
+    <article id="pair" hidden>
+      <section class="card">
+        <h2 class="label">研究背景</h2>
+        <p id="background" class="bg"></p>
+        <p id="background_zh" class="bg zh" lang="zh-CN"></p>
+      </section>
+
+      <section class="card">
+        <h2 class="label">原文引语</h2>
+        <ol id="quotes" class="quotes"></ol>
+      </section>
+
+      <section class="card">
+        <h2 class="label" id="diffhead">两边不同的地方</h2>
+        <div class="diffs" id="diffs"></div>
+      </section>
+
+      <section class="card q" id="q1">
+        <h2 class="qtitle"><span class="qn">①</span> 哪边读得更深？</h2>
+        <div class="choices" role="radiogroup" aria-label="哪边读得更深">
+          <button type="button" class="choice" data-blind="A" role="radio"><b>A</b><kbd>a</kbd></button>
+          <button type="button" class="choice" data-blind="B" role="radio"><b>B</b><kbd>b</kbd></button>
+          <button type="button" class="choice" data-blind="neither" role="radio"><b>两边都不行</b><kbd>x</kbd></button>
+        </div>
+        <div class="q-foot">
+          <span class="hint" id="q1hint">提交后会显示我们的判断，这一题就不能再改了。</span>
+          <button type="button" class="btn primary" id="q1submit" disabled>提交 ①</button>
+        </div>
+      </section>
+
+      <section class="card q slide" id="q2" hidden>
+        <div class="claim" id="claimbox">
+          <p class="claim-text" id="claim"></p>
+          <p class="claim-text zh" id="claim_zh" lang="zh-CN"></p>
+          <p class="claim-meta" id="revealLevel"></p>
+        </div>
+        <h2 class="qtitle"><span class="qn">②</span> 这个判断对吗？</h2>
+        <div class="choices" role="radiogroup" aria-label="这个判断对吗">
+          <button type="button" class="choice" data-verdict="对" role="radio"><b>对</b><kbd>1</kbd></button>
+          <button type="button" class="choice" data-verdict="不对" role="radio"><b>不对</b><kbd>2</kbd></button>
+          <button type="button" class="choice" data-verdict="部分对" role="radio"><b>部分对</b><kbd>3</kbd></button>
+        </div>
+        <label class="field">
+          <span id="reasonlabel">一句话理由（选「不对」或「部分对」时必填）</span>
+          <input type="text" id="reason" maxlength="1000" autocomplete="off" placeholder="例：较优那条把作者的读法写偏了">
+        </label>
+        <fieldset class="tags" id="tags">
+          <legend>可选标签</legend>
+        </fieldset>
+        <div class="q-foot">
+          <span class="hint" id="q2hint"></span>
+          <button type="button" class="btn primary" id="q2submit" disabled>提交 ②</button>
+        </div>
+      </section>
+
+      <section class="card done" id="donebox" hidden></section>
+    </article>
+
+    <section class="card finish" id="finish" hidden>
+      <h2>全部看完了，谢谢！</h2>
+      <p>答案已保存在服务器上。可以用顶部的「上一对」回看。</p>
+    </section>
+  </main>
+
+  <dialog id="skipdlg">
+    <form method="dialog" class="dlg">
+      <h2>跳过这一对？</h2>
+      <p class="hint">跳过后不能再作答。可以留一句为什么（可不填）。</p>
+      <input type="text" id="skipnote" maxlength="1000" autocomplete="off" placeholder="例：对这个领域不熟">
+      <div class="dlg-actions">
+        <button value="cancel" class="btn ghost">取消</button>
+        <button value="ok" class="btn primary" id="skipok">跳过</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

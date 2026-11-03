@@ -1,0 +1,37 @@
+# secrets
+.env
+.env.*
+**/secrets/
+review_site/data/experts*.json
+review_site/data/pairs.real*.json
+
+# full datasets (copyrighted excerpts): only data/samples/ is public
+**/pairs.jsonl
+**/pairs.csv
+**/pairs_flagged.*
+data/full/
+
+# pipeline run state
+pipeline/out/
+pipeline/logs/
+**/cache_claude/
+**/claude_ledger.jsonl
+CALLS_LOCKED
+
+# training artifacts
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+checkpoints/
+wandb/
+runs/**/outputs/
+
+# misc
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+.vercel/
