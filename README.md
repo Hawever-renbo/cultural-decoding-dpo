@@ -2,15 +2,15 @@
 
 Preference data for teaching an LLM to read interview material the way a qualitative researcher does, and the DPO training that uses it.
 
-This is a post-training work sample. It covers the full data loop: task design, a synthetic pair generator, programmatic and model-based filters, a blind expert-review site, and six design rounds driven by what the expert said. Training runs are added to [`training/`](training/) as they progress.
+This is a post-training work sample. It covers the full data loop: task design, a synthetic pair generator, programmatic and model-based filters, a blind expert-review site, and six design rounds driven by what the expert said. Training runs are added to [`training/`](training/) as they progress; round 1 is done and round 2 is running.
 
-**Status (2026-11-03)**
+**Status (2026-11-04)**
 
 | | |
 |---|---|
 | Dataset | **8,021 DPO pairs** (Z6), from 1,914 units in 1,022 published qualitative studies. 172 more pairs are flagged by stricter checks and kept apart. |
 | Expert check | In the last expert-reviewed round before Z6 (Z5, 39 pairs), the expert picked the intended *chosen* side blind in 33/39 and agreed with it after reveal in 36/39. An 80-pair blind review of Z6 is in progress. |
-| Training | DPO on the 8,021 pairs, in progress. |
+| Training | **Round 1 done (2026-11-04).** Qwen3.8-27B, DPO + LoRA. On a locked test split of held-out articles: pair accuracy 0.806 → 0.940 (deep reading 0.443 → 0.854); labels adding words not in the quote 10.0% → 4.7%; token F1 vs. reviewed reference codes 0.721 → 0.836; MMLU unchanged. Human blind review pending. **Round 2 (on-policy DPO) in progress.** See [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/). |
 | Cost | 5,017 model calls for Z6, about $203 at API-equivalent prices (run through the Claude Code CLI subscription). |
 
 ## The task
@@ -99,7 +99,7 @@ The rounds changed several things at once (method, units, papers and coding leve
 | [`review_site/`](review_site/) | Blind A/B review web app (Vercel functions and Blob storage, token links, no model judgments shown before the blind pick) |
 | [`data/`](data/) | Data card, schema, export statistics, 32 sample pairs |
 | [`docs/`](docs/) | Pipeline design, the human-calibration record, and the Chinese originals in [`docs/zh/`](docs/zh/) |
-| [`training/`](training/) | DPO runs, added as they progress |
+| [`training/`](training/) | DPO runs: round 1 results and training curves; round 2 added when done |
 
 ## What is not here
 
@@ -107,6 +107,7 @@ The rounds changed several things at once (method, units, papers and coding leve
 - **The source corpus and the paper full texts.**
 - **The held-out evaluation set.** Complete cases are reserved for final evaluation and are never read by any generation step. Papers in the held-out pools are excluded from generation.
 - **Reviewer access tokens, raw answer sheets and the site's answer key.**
+- **The training evidence repository.** Pre-registration, logs and gate outputs for the DPO runs are in [Hawever-renbo/cdm-open-coding-dpo](https://github.com/Hawever-renbo/cdm-open-coding-dpo) (private; access on request, see [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/#evidence)).
 
 The code reads inputs from the private working tree, so it shows how the data was made but does not run on its own.
 

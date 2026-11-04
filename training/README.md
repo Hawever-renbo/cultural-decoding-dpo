@@ -1,6 +1,11 @@
 # Training
 
-DPO on the Z6 pairs, in progress. Each run is added here as it goes: config first, then metrics, then evaluation.
+DPO on the Z6 pairs. Each run is added here as it goes: config first, then metrics, then evaluation.
+
+| Run | Status |
+|---|---|
+| [`2026-11-03_round1-dpo`](runs/2026-11-03_round1-dpo/) | Done 2026-11-04. All gated checks passed on the locked test split; human blind review pending. |
+| Round 2 (on-policy DPO from round-1 checkpoint 60) | In progress |
 
 ## Layout
 

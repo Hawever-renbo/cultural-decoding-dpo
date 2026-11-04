@@ -1,0 +1,21 @@
+name: Request evidence access
+description: Ask for access to the private training evidence repository (Hawever-renbo/cdm-open-coding-dpo).
+title: "Evidence access: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The DPO training record (pre-registration, logs, gate outputs) is kept in a private repository because some files contain excerpts from copyrighted interview studies. Leave your GitHub username below and you will be added to it.
+  - type: input
+    id: username
+    attributes:
+      label: GitHub username
+      placeholder: your-username
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Name / affiliation (optional)
+    validations:
+      required: false
