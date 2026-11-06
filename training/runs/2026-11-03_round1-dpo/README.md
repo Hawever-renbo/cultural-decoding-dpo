@@ -50,7 +50,7 @@ What the run should show: on held-out articles, the model prefers the more faith
 | Lost qualifier (n = 62) | 0.919 | 0.968 |
 | Other 7 groups | 0.90–1.00 | equal |
 
-Depth and focus need the quote to be read; both beat the shortcut probe (focus 0.872 vs 0.486 for the word-difference probe).
+Focus is the cleanest evidence that the model reads the quote: on the 300 dev pairs, a word-difference probe gets only 0.486 there and always picking the longer label gets 0.229. Depth is weaker evidence: its chosen side is almost always longer and the word-difference probe gets 0.914, above the trained 0.854, so part of that gain may be a length effect.
 
 **L2: generated codes** (300 excerpts, greedy)
 
@@ -85,7 +85,7 @@ Training curves: [`metrics.csv`](metrics.csv) (train every step, dev every 30 st
 
 ## Next: round 2
 
-On-policy DPO from checkpoint 60: sample the model's own codes, build pairs from its own errors (imposed connectives, outside words, extra text, whole-unit errors), and train a new adapter with checkpoint 60 as reference. Then one blind review by a human and by the domain expert, covering base, round 1 and round 2 together.
+On-policy DPO from checkpoint 60: sample the model's own codes, build pairs from its own errors (imposed connectives, outside words, extra text, whole-unit errors), and train a new adapter with checkpoint 60 as reference. Then a human blind review and an anthropology expert review, covering base, round 1 and round 2 on the same blind sheet.
 
 ## Evidence
 

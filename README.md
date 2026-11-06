@@ -10,7 +10,7 @@ This is a post-training work sample. It covers the full data loop: task design, 
 |---|---|
 | Dataset | **8,021 DPO pairs** (Z6), from 1,914 units in 1,022 published qualitative studies. 172 more pairs are flagged by stricter checks and kept apart. |
 | Expert check | In the last expert-reviewed round before Z6 (Z5, 39 pairs), the expert picked the intended *chosen* side blind in 33/39 and agreed with it after reveal in 36/39. An 80-pair blind review of Z6 is in progress. |
-| Training | **Round 1 done (2026-11-04).** Qwen3.8-27B, DPO + LoRA. On a locked test split of held-out articles: pair accuracy 0.806 → 0.940 (deep reading 0.443 → 0.854); labels adding words not in the quote 10.0% → 4.7%; token F1 vs. reviewed reference codes 0.721 → 0.836; MMLU unchanged. Human blind review pending. **Round 2 (on-policy DPO) in progress.** See [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/). |
+| Training | **Round 1 done (2026-11-04).** Qwen3.8-27B, DPO + LoRA. On a locked test split of held-out articles: pair accuracy 0.806 → 0.940 (emphasis pairs, which word-level shortcuts cannot solve, 0.702 → 0.872); labels adding words not in the quote 10.0% → 4.7%; token F1 vs. reviewed reference codes 0.721 → 0.836; MMLU unchanged. Human blind review pending. **Round 2 (on-policy DPO) in progress.** See [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/). |
 | Cost | 5,017 model calls for Z6, about $203 at API-equivalent prices (run through the Claude Code CLI subscription). |
 
 ## The task
