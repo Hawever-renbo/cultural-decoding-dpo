@@ -416,10 +416,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def body(self):
         """A same-origin JSON POST body, or None (the response has then been sent)."""
+        # Two checks against cross-site requests. The custom header cannot be sent cross-origin without a CORS
+        # preflight, which this server never grants. The Origin check is a second line; it compares host names
+        # only, because proxies and some browser setups drop the port or change the scheme on the way.
         origin = self.headers.get("Origin")
-        allowed = {self.app.cfg.public_url, "http://" + (self.headers.get("Host") or ""), "https://" + (self.headers.get("Host") or "")}
+        here = {_hostname(self.app.cfg.public_url), _hostname(self.headers.get("Host"))} - {""}
         self.close_connection = True                # every early return below leaves the request body unread
-        if self.headers.get("X-Requested-With") != "demo" or (origin and origin not in allowed):
+        if self.headers.get("X-Requested-With") != "demo" or (origin and _hostname(origin) not in here):
+            self.app.log("-", "refused POST %s: origin=%r host=%r x-requested-with=%r" % (
+                self.path.split("?")[0], origin, self.headers.get("Host"), self.headers.get("X-Requested-With")))
             self.send(403, {"error": "forbidden"})
             return None
         try:
@@ -717,6 +722,14 @@ class Handler(BaseHTTPRequestHandler):
             app.log(owner, "chat CRASHED\n%s" % traceback.format_exc())
             self.sse("error", {"message": "The answer stopped because of an internal error."})
         self.sse("end", {})
+
+
+def _hostname(value):
+    """Host name of an Origin, a URL or a Host header, without scheme and port."""
+    v = (value or "").strip().lower()
+    if "://" in v:
+        return urllib.parse.urlsplit(v).hostname or ""
+    return urllib.parse.urlsplit("//" + v).hostname or "" if v else ""
 
 
 def _http_json(url, form=None, token=None):

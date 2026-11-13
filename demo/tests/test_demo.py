@@ -205,6 +205,9 @@ class DemoTest(unittest.TestCase):
         self.assertEqual(c.request("GET", "/api/me")[0], 401)
         c.cookies["sid"] = good
         self.assertEqual(c.request("POST", "/api/runs", {"text": "x", "focus": "y"}, headers={"Origin": "https://evil.example"})[0], 403)
+        self.assertEqual(c.request("POST", "/api/runs", {"text": "x", "focus": "y"}, headers={"Origin": "null"})[0], 403)
+        for origin in ("http://127.0.0.1:%d" % self.port, "http://127.0.0.1", "http://demo.test"):     # same site, port dropped on the way
+            self.assertEqual(c.request("POST", "/api/runs", {"text": "x", "focus": "y"}, headers={"Origin": origin})[0], 400, origin)
         self.assertEqual(c.request("POST", "/api/runs", {"text": "x"}, headers={"X-Requested-With": ""})[0], 403)
 
     def test_github_sign_in(self):
