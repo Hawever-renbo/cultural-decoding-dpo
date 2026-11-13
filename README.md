@@ -13,6 +13,15 @@ This is a post-training work sample. It covers the full data loop: task design, 
 | Training | **Round 1 done (2026-11-04).** Qwen3.8-27B, DPO + LoRA. On a locked test split of held-out articles: pair accuracy 0.806 → 0.940 (emphasis pairs, which word-level shortcuts cannot solve, 0.702 → 0.872); labels adding words not in the quote 10.0% → 4.7%; token F1 vs. reviewed reference codes 0.721 → 0.836; MMLU unchanged. Human blind review pending. **Round 2 (on-policy DPO) in progress.** See [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/). |
 | Cost | 5,017 model calls for Z6, about $203 at API-equivalent prices (run through the Claude Code CLI subscription). |
 
+## Two parts: a model and a harness
+
+| | What | Where |
+|---|---|---|
+| **Model** | A post-trained open-coding model: Qwen3.8-27B with the round-1 DPO adapter. Given interview excerpts, it writes an in-vivo code that stays inside the quote. | The data and method are described below; results are in [`training/`](training/) |
+| **Harness** | A coding agent built around that model. Level 1 (open codes) goes to the post-trained model, one statement at a time. Levels 2–3 (concepts, categories, a core category and a theory) and the conversation go to a general model, under gates and metrics computed by program. Any abstraction can be traced back to the quote it came from. | [`agent/`](agent/) |
+
+The agent does not let the model that codes judge its own coding: rounds are ranked by program-computed metrics, and model self-ratings are logged but decide nothing. The same rule shaped the training (see step 4 of the [round-1 run](training/runs/2026-11-03_round1-dpo/)).
+
 ## The task
 
 Grounded-theory coding runs open → axial → selective. This dataset targets the first step, **open coding**: given one section of a study (a short research-context card plus numbered interview quotes), write a code label for what a speaker says and anchor it to a verbatim span.
@@ -100,6 +109,7 @@ The rounds changed several things at once (method, units, papers and coding leve
 | [`data/`](data/) | Data card, schema, export statistics, 32 sample pairs |
 | [`docs/`](docs/) | Pipeline design, the human-calibration record, and the Chinese originals in [`docs/zh/`](docs/zh/) |
 | [`training/`](training/) | DPO runs: round 1 results and training curves; round 2 added when done |
+| [`agent/`](agent/) | The coding agent: level-1 open coding on the post-trained model, levels 2–3 on a general model, gates, metrics, tools, offline tests |
 
 ## What is not here
 
@@ -107,9 +117,11 @@ The rounds changed several things at once (method, units, papers and coding leve
 - **The source corpus and the paper full texts.**
 - **The held-out evaluation set.** Complete cases are reserved for final evaluation and are never read by any generation step. Papers in the held-out pools are excluded from generation.
 - **Reviewer access tokens, raw answer sheets and the site's answer key.**
+- **Model weights.** The base model and the adapter are not in this repository.
+- **The interview material the agent was developed on.** It comes from non-public studies. The agent ships with a synthetic example instead, and its naming examples were rewritten for this release.
 - **The training evidence repository.** Pre-registration, logs and gate outputs for the DPO runs are in [Hawever-renbo/cdm-open-coding-dpo](https://github.com/Hawever-renbo/cdm-open-coding-dpo) (private; access on request, see [`training/runs/2026-11-03_round1-dpo/`](training/runs/2026-11-03_round1-dpo/#evidence)).
 
-The code reads inputs from the private working tree, so it shows how the data was made but does not run on its own.
+The data pipeline in `pipeline/` reads inputs from the private working tree, so it shows how the data was made but does not run on its own. The agent in `agent/` does run on its own, given a model endpoint.
 
 ## License
 

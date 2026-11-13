@@ -35,3 +35,8 @@ __pycache__/
 .DS_Store
 node_modules/
 .vercel/
+
+# demo: who may sign in, stored runs (server settings are covered by .env above)
+demo/access.json
+demo/runs/
+!.env.example

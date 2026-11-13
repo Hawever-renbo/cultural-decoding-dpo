@@ -1,0 +1,29 @@
+{
+  "note": "Illustrative naming examples written for this public release. They show naming density only (stacked modifiers + a process as head) and are not findings from any study. Replace them with examples from your own field if you have some.",
+  "categories": {
+    "en": [
+      "Credit-exclusion-driven borrowing through kin",
+      "Water-shortage-driven re-timing of household chores",
+      "Liability-anxiety-driven double-checking of machine answers",
+      "Wage-loss-driven postponing of clinic visits",
+      "Shift-work-driven swapping of childcare between neighbours"
+    ],
+    "zh": [
+      "信贷排斥驱动的亲属借贷周转",
+      "供水不稳驱动的家务时间重排",
+      "担责焦虑驱动的机器答案复核",
+      "误工顾虑驱动的就诊拖延",
+      "倒班作息驱动的邻里托育互换"
+    ]
+  },
+  "core": {
+    "en": [
+      "focus: how night-shift nurses hand over patients -> core: Compressing handover talk to protect the next shift's first hour",
+      "focus: how migrant households send money home -> core: Splitting remittances across channels to hedge against a failed transfer"
+    ],
+    "zh": [
+      "焦点：夜班护士如何交接病人 → 核心范畴：为保住下一班的头一小时而压缩交接谈话",
+      "焦点：流动家庭如何往家里汇钱 → 核心范畴：为防一次转账失败而分渠道拆分汇款"
+    ]
+  }
+}
