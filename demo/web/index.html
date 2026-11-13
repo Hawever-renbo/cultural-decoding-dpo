@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cultural Decoding · coding agent</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ============================== sign-in ============================== -->
+<main id="gate" class="gate" hidden>
+  <section class="gate-specimen" aria-label="What the model is trained to tell apart">
+    <p class="kicker">Cultural Decoding</p>
+    <h1>Read what was said.<br><em>Add nothing.</em></h1>
+    <figure class="specimen">
+      <figcaption>Two labels for the same quote, from the training data</figcaption>
+      <p class="code-line good"><span class="tick" aria-hidden="true">✓</span>I think they would have great problems thinking their genetic material is making sperm for other people</p>
+      <p class="code-line bad"><span class="tick" aria-hidden="true">✗</span>I think they would have great <span class="outside">ethical</span> problems thinking their genetic material is making sperm for other people</p>
+      <p class="specimen-note">The speaker never said <i>ethical</i>. An open code stays inside the quote.</p>
+    </figure>
+    <p class="gate-blurb">An agent for interview and field material. A post-trained model writes the open codes in the speaker's own words; a general model builds concepts, categories and a core category on top, and every step can be traced back to a quote.</p>
+  </section>
+
+  <section class="gate-form" aria-label="Sign in">
+    <div class="card">
+      <p class="kicker">By invitation</p>
+      <h2>Sign in to the demo</h2>
+      <p id="gate-msg" class="msg" role="status" hidden></p>
+
+      <form id="email-form" autocomplete="on" hidden>
+        <label for="email">Work email</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@organisation.com" required>
+        <button class="btn primary" type="submit">Email me a code</button>
+      </form>
+
+      <form id="code-form" hidden>
+        <p class="sent">If <b id="sent-to"></b> has access, a 6-digit code is on its way. It is valid for 10 minutes.</p>
+        <label for="code">Sign-in code</label>
+        <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" maxlength="7" placeholder="000000" required>
+        <button class="btn primary" type="submit">Sign in</button>
+        <button class="btn link" type="button" id="code-back">Use another address</button>
+      </form>
+
+      <div id="gh-wrap" hidden>
+        <p class="or"><span>or</span></p>
+        <a class="btn outline" id="gh-btn" href="/auth/github/start">Sign in with GitHub</a>
+      </div>
+
+      <p class="fine">No access yet? <a id="request-link" href="#" rel="noopener">Request it from the repository owner</a>.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ============================== workbench ============================== -->
+<div id="bench" class="bench" hidden>
+  <header class="masthead">
+    <div class="brand"><span class="kicker">Cultural Decoding</span><span class="brand-sub">coding agent · demo</span></div>
+    <div class="models" id="models" aria-live="polite"></div>
+    <div class="who"><span id="who"></span><button class="btn link" id="signout" type="button">Sign out</button></div>
+  </header>
+
+  <div class="layout">
+    <!-- material -->
+    <aside class="material" aria-label="Material">
+      <form id="run-form">
+        <div class="row split">
+          <h2 class="h">Material</h2>
+          <button class="btn link" type="button" id="load-example">Load the example</button>
+        </div>
+        <label for="focus">Research focus <span class="hint">what the study is about, in one sentence</span></label>
+        <textarea id="focus" rows="2" maxlength="300" required placeholder="How night-market food vendors decide whether to accept mobile payments"></textarea>
+
+        <label for="text">Interview text <span class="hint" id="word-count"></span></label>
+        <textarea id="text" rows="14" required spellcheck="false" placeholder="Interviewer: When did you start…&#10;Rosa: Last year, after the students kept asking…&#10;&#10;One speaker per line, as “Name: what they said”. Interviewer turns are shown but not coded."></textarea>
+
+        <details class="more">
+          <summary>Context card <span class="hint">optional</span></summary>
+          <label for="site">Site and participants</label>
+          <input id="site" type="text" maxlength="300">
+          <label for="method">How the data were collected</label>
+          <input id="method" type="text" maxlength="300">
+          <label for="question">Research question</label>
+          <input id="question" type="text" maxlength="300">
+        </details>
+
+        <div class="opts">
+          <label class="check"><input type="checkbox" id="compare" checked> <span>Also code with the untrained base model</span></label>
+          <label class="check"><input type="checkbox" id="market"> <span>Commercial-research lens for the decoding</span></label>
+        </div>
+
+        <p id="run-msg" class="msg" role="status" hidden></p>
+        <button class="btn primary wide" type="submit" id="run-btn">Code this text</button>
+        <p class="fine" id="quota"></p>
+        <p class="fine">Text you paste is sent to the models named above, kept on this server for up to <span id="keep">24</span> hours so you can ask about it, then deleted. Do not paste confidential material.</p>
+      </form>
+    </aside>
+
+    <!-- the sheet -->
+    <main class="sheet" id="sheet">
+      <ol class="rail" id="rail" aria-label="Progress">
+        <li data-stage="open"><span class="n">I</span>Open codes</li>
+        <li data-stage="concepts"><span class="n">II</span>Concepts</li>
+        <li data-stage="axial"><span class="n">III</span>Categories</li>
+        <li data-stage="selective"><span class="n">IV</span>Core &amp; theory</li>
+        <li data-stage="decode"><span class="n">V</span>Decoding</li>
+        <li data-stage="checks"><span class="n">VI</span>Checks</li>
+      </ol>
+
+      <section id="intro" class="intro">
+        <h1>Three levels, one page.</h1>
+        <div class="intro-cols">
+          <p><span class="num">I</span><b>Open codes.</b> Each statement gets a short label in the speaker's own words, tied to a verbatim quote. This is the step the post-trained model does. Program checks flag any word the speaker never used.</p>
+          <p><span class="num">II–IV</span><b>Concepts, categories, core.</b> A general model abstracts upward under fixed floors: six paradigm slots, no bare-noun names, a core category that stays on your focus. Rounds are ranked by program, not by a model's opinion of itself.</p>
+          <p><span class="num">V–VI</span><b>Decoding and checks.</b> A thick-description reading that may quote only what was said, and a ledger of the numbers behind the run.</p>
+        </div>
+        <p class="intro-cta">Paste an interview on the left, or <button class="btn link" type="button" id="load-example-2">load the synthetic example</button>.</p>
+        <p class="intro-cta" id="reopen" hidden>Or reopen your last coding: <button class="btn link" type="button" id="reopen-btn"></button></p>
+      </section>
+
+      <div id="results" hidden>
+        <section class="sec" id="sec-open">
+          <header class="sec-head"><h2><span class="num">I</span>Open codes</h2><p class="sec-by" id="open-by"></p></header>
+          <div class="scorecard" id="scorecard" hidden></div>
+          <div class="page" id="page"></div>
+        </section>
+
+        <section class="sec" id="sec-concepts" hidden>
+          <header class="sec-head"><h2><span class="num">II</span>Concepts</h2><p class="sec-by" id="concepts-by"></p></header>
+          <div class="chips" id="concepts"></div>
+        </section>
+
+        <section class="sec" id="sec-axial" hidden>
+          <header class="sec-head"><h2><span class="num">III</span>Categories</h2><p class="sec-by">Six paradigm slots (Strauss &amp; Corbin). Select a category to see the quotes under it.</p></header>
+          <div class="board" id="board"></div>
+          <div class="trace" id="trace" hidden></div>
+          <details class="more" id="rel-wrap" hidden><summary>Relations between categories <span class="hint" id="rel-count"></span></summary><ul class="rels" id="rels"></ul></details>
+        </section>
+
+        <section class="sec" id="sec-selective" hidden>
+          <header class="sec-head"><h2><span class="num">IV</span>Core category &amp; theory</h2></header>
+          <p class="core" id="core"></p>
+          <div class="theory">
+            <div><h3>Storyline</h3><div id="storyline"></div></div>
+            <div><h3>Propositions <span class="hint">each stated so it can fail</span></h3><ol id="propositions"></ol></div>
+          </div>
+        </section>
+
+        <section class="sec" id="sec-decode" hidden>
+          <header class="sec-head"><h2><span class="num">V</span>Decoding</h2><p class="sec-by">A thick-description reading of the core category, layer by layer. It may quote only what was said.</p></header>
+          <div class="strata" id="strata"></div>
+        </section>
+
+        <section class="sec" id="sec-checks" hidden>
+          <header class="sec-head"><h2><span class="num">VI</span>Checks</h2><p class="sec-by">Computed by program from the coding itself. No model grades its own work here.</p></header>
+          <div class="gates" id="gates"></div>
+          <div class="ledger" id="ledger"></div>
+          <div class="notes" id="notes"></div>
+        </section>
+
+        <section class="sec" id="sec-chat" hidden>
+          <header class="sec-head"><h2><span class="num">VII</span>Ask the agent</h2><p class="sec-by">It reads this coding through tools and quotes with turn numbers.</p></header>
+          <div class="chat" id="chat" aria-live="polite"></div>
+          <div class="asks" id="asks"></div>
+          <form id="chat-form" class="chat-form">
+            <textarea id="chat-input" rows="1" maxlength="2000" placeholder="Ask about this coding…" required></textarea>
+            <button class="btn primary" type="submit" id="chat-btn">Ask</button>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

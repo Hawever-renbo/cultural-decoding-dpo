@@ -1,0 +1,32 @@
+name: Request demo access
+description: Ask for access to the hosted demo of the coding agent with the post-trained model.
+title: "Demo access: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The demo runs on the project's own GPU machine and is open by invitation. Leave your GitHub username and you will be able to sign in with GitHub.
+
+        Issues are public, so please do not post an email address here. If you would rather sign in with a code sent to your email, say so below and the repository owner will get in touch.
+  - type: input
+    id: username
+    attributes:
+      label: GitHub username
+      placeholder: your-username
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Name / affiliation (optional)
+    validations:
+      required: false
+  - type: dropdown
+    id: method
+    attributes:
+      label: How would you like to sign in?
+      options:
+        - With GitHub
+        - With a code sent to my email (the owner will contact me)
+    validations:
+      required: true

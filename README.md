@@ -22,6 +22,12 @@ This is a post-training work sample. It covers the full data loop: task design, 
 
 The agent does not let the model that codes judge its own coding: rounds are ranked by program-computed metrics, and model self-ratings are logged but decide nothing. The same rule shaped the training (see step 4 of the [round-1 run](training/runs/2026-11-03_round1-dpo/)).
 
+### Demo
+
+[`demo/`](demo/) is a small web app that puts the two parts together. Paste interview text and a research focus, watch the three levels come in, read the post-trained model next to the untrained base model on your own text, and ask the agent about the result.
+
+A hosted copy runs on the project's own GPU machine and is **open by invitation**. To use it, [request access](https://github.com/Hawever-renbo/cultural-decoding-dpo/issues/new?template=demo-access.yml) with your GitHub username, or contact the repository owner. You will get the link, and your sign-in (GitHub, or a code sent to your email) will be switched on. The machine is not on around the clock; when the post-trained model is off, the page says so.
+
 ## The task
 
 Grounded-theory coding runs open → axial → selective. This dataset targets the first step, **open coding**: given one section of a study (a short research-context card plus numbered interview quotes), write a code label for what a speaker says and anchor it to a verbatim span.
@@ -110,6 +116,7 @@ The rounds changed several things at once (method, units, papers and coding leve
 | [`docs/`](docs/) | Pipeline design, the human-calibration record, and the Chinese originals in [`docs/zh/`](docs/zh/) |
 | [`training/`](training/) | DPO runs: round 1 results and training curves; round 2 added when done |
 | [`agent/`](agent/) | The coding agent: level-1 open coding on the post-trained model, levels 2–3 on a general model, gates, metrics, tools, offline tests |
+| [`demo/`](demo/) | Access-restricted web demo of the agent with the post-trained model (sign-in by emailed code or GitHub, per-person limits) |
 
 ## What is not here
 
