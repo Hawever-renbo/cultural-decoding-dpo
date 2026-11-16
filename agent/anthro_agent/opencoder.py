@@ -1,4 +1,4 @@
-"""Level 1: in-vivo open coding, one target span at a time.
+"""Level 1: in-vivo open coding, one target span (a statement of one to three sentences) at a time.
 
 With a post-trained open-coding model configured (OPENCODER_*), every target span is sent to it in the format
 it was trained on: a short context card, the numbered excerpts of one unit, and one target span to code. The
@@ -17,6 +17,11 @@ NOT_STATED = "Not stated in the provided text."
 CARD = (("research_question", "Research question"), ("site", "Site and participants"),
         ("method", "How the data were collected"), ("section", "This section of the study"))
 TASK = "Target excerpt: [{n}] «{span}»\n\nWrite ONE code for the target excerpt."
+# A target is a statement of one to three adjacent sentences: sentences are joined until the span has at least
+# SPAN_MIN_WORDS words. That puts spans where the training targets were (median 19 words, 10th-90th percentile
+# 11-31). Cut at every sentence instead, the spans fall below that range and the label has nothing left to
+# condense: it comes back as a copy of the sentence.
+SPAN_MIN_WORDS, SPAN_MAX_WORDS = 10, 45
 
 
 def system_prompt():
@@ -40,7 +45,7 @@ def plan(excerpts, focus, context=None, max_targets=None):
         local = {k: excerpts[pos]["text"] for k, pos in enumerate(positions, 1)}
         source = card + "\n\n" + "\n".join("[%d] %s" % (k, t) for k, t in local.items())
         for k, pos in enumerate(positions, 1):
-            for span in segment.target_spans(excerpts[pos]["text"], min_words=6, max_words=45):
+            for span in segment.target_spans(excerpts[pos]["text"], min_words=SPAN_MIN_WORDS, max_words=SPAN_MAX_WORDS):
                 jobs.append({"window": w, "n": k, "turn_id": excerpts[pos]["i"], "role": excerpts[pos].get("role", ""),
                              "span": span, "excerpts": local,
                              "user": source + "\n\n" + TASK.format(n=k, span=span)})
