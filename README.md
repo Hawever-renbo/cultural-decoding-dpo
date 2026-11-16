@@ -24,9 +24,9 @@ The agent does not let the model that codes judge its own coding: rounds are ran
 
 ### Demo
 
-[`demo/`](demo/) is a small web app that puts the two parts together. Paste interview text and a research focus, watch the three levels come in, read the post-trained model next to the untrained base model on your own text, and ask the agent about the result.
+[`demo/`](demo/) is a small web app that puts the two parts together. Paste interview text and a research focus, watch the three levels come in, read the post-trained model next to the untrained base model on your own text, see the finished coding as a map, and ask the agent about the result.
 
-A hosted copy runs on the project's own GPU machine and is **open by invitation**. To use it, [request access](https://github.com/Hawever-renbo/cultural-decoding-dpo/issues/new?template=demo-access.yml) with your GitHub username, or contact the repository owner. You will get the link, and your sign-in (GitHub, or a code sent to your email) will be switched on. The machine is not on around the clock; when the post-trained model is off, the page says so.
+The demo is **open by invitation**. It is not a public site: it needs the project's own GPU machine, which serves the post-trained model, and is started for invited people. To use it, [request access](https://github.com/Hawever-renbo/cultural-decoding-dpo/issues/new?template=demo-access.yml) with your GitHub username, or contact the repository owner. You will get a link and a way to sign in (GitHub, or a code sent to your email). The machine is not on around the clock; when the post-trained model is off, the page says so.
 
 ## The task
 
