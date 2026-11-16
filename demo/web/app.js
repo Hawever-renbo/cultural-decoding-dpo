@@ -42,6 +42,7 @@
 
   const S = { config: null, me: null, examples: [], turns: new Map(), spans: new Map(), graph: null, runId: null,
               stream: null, seen: 0, busy: false, chat: [], selectedCat: null };
+  let MAP = null;                                   // the drawn map of a finished coding (map.js)
 
   const SLOTS = [["P", "Phenomenon"], ["CC", "Causal conditions"], ["Ctx", "Context"], ["IC", "Intervening conditions"],
                  ["S", "Action strategies"], ["Csq", "Consequences"]];
@@ -214,6 +215,7 @@
     S.turns = new Map(); S.spans = new Map(); S.graph = null; S.selectedCat = null; S.chat = [];
     for (const id of ["page", "concepts", "board", "rels", "storyline", "propositions", "strata", "gates", "ledger", "notes", "chat", "scorecard", "trace"]) clear($(id));
     $("core").textContent = "";
+    show($("map"), false); show(clear($("map-panel")), false); S.mapList = false; S.mapSel = null; if (MAP) MAP.clear();
     for (const id of ["sec-concepts", "sec-axial", "sec-selective", "sec-decode", "sec-checks", "sec-chat", "scorecard", "trace", "rel-wrap"]) show($(id), false);
     document.querySelectorAll(".stage-error").forEach((n) => n.remove());
     document.querySelectorAll("#rail li").forEach((li) => { li.className = ""; });
@@ -238,7 +240,7 @@
     for (const t of p.turns) page.append(turnRow(t, true));
     const m = p.models, by = clear($("open-by"));
     by.append("Written by ", el("b", { text: m.open_coding }),
-              m.open_coding_is_post_trained ? ", the post-trained open-coding model. One code per statement, checked by program."
+              m.open_coding_is_post_trained ? ", the post-trained open-coding model. One code per statement of one to three sentences, checked by program."
                                            : ", a general model (the post-trained model is not in this run).");
     clear($("concepts-by")).append("Abstractions made on the researcher's side by ", el("b", { text: m.reasoner }), ".");
     markRail("open");
@@ -473,12 +475,131 @@
 
   async function loadGraph(runId, repaint) {
     const r = await api("/api/runs/" + runId);
-    if (r.status !== 200) return;
+    if (r.status === 401) return location.replace("/");
+    if (r.status !== 200) {
+      if (!repaint) return;
+      if (r.status === 404) {                        // asked for by a click: say why nothing opened
+        const hours = S.me ? S.me.limits.keep_hours : 24;
+        clear($("reopen")).append("That coding is no longer stored: codings are deleted after " + hours + " hours. Run it again to get it back.");
+      } else say($("run-msg"), r.data.error || "The coding could not be opened. Try again in a moment.");
+      return;
+    }
     S.graph = r.data.graph; S.runId = runId;
     if (repaint) {
       paintAll(r.data.graph, r.data.rubric);
       if (!$("focus").value) $("focus").value = r.data.graph.focus || "";
     } else paintTheory(S.graph.theory);
+    paintMap(S.graph);
+  }
+
+  // ------------------------------------------------------------ the coding as a map (map.js draws, this explains)
+  function paintMap(g) {
+    const ok = Boolean(window.CodingMap) && (g.categories || []).length > 0;
+    show($("map"), ok);
+    if (!ok) return;
+    if (!MAP) {
+      MAP = window.CodingMap.mount($("map-canvas"), { onSelect: (sel) => { S.mapSel = sel; if (sel) S.mapList = false; paintMapPanel(S.graph, sel); } });
+      $("map-in").addEventListener("click", () => MAP.zoom(1.25));
+      $("map-out").addEventListener("click", () => MAP.zoom(0.8));
+      $("map-fit").addEventListener("click", () => MAP.fit());
+      $("map-list").addEventListener("click", () => {          // the same content as text, for keyboards and screen readers
+        const open = S.mapList && !S.mapSel;
+        S.mapList = !open;
+        MAP.select(null, null);
+      });
+    }
+    S.mapList = false; S.mapSel = null;
+    MAP.setGraph(g);
+    clear($("map-legend")).append(...mapLegend(g));
+    paintMapPanel(g, null);
+  }
+
+  const mapWide = () => window.matchMedia("(min-width: 821px)").matches;   // wide: the panel is a drawer over the plate
+  function mapLegend(g) {
+    const cats = g.categories || [], rows = [];
+    for (const [code, name] of SLOTS) {
+      rows.push(el("li", {}, el("span", { class: "sw sw-" + code }), code + " · " + name, el("small", { text: String(cats.filter((c) => c.c6_slot === code).length) })));
+    }
+    rows.push(el("li", { class: "brk", "aria-hidden": "true" }),
+              el("li", {}, el("span", { class: "sw dot" }), "a dot is a concept"),
+              el("li", {}, el("span", { class: "sw pen" }), "small dots above it: its open codes"),
+              el("li", {}, el("span", { class: "sw line" }), "arrow: a relation, named on the line"),
+              el("li", {}, el("span", { class: "sw line red" }), "red line: taken up by the core"));
+    if ((g.core_category || {}).name) rows.push(el("li", {}, el("span", { class: "sw box" }), "dashed box: left outside the core"));
+    return rows;
+  }
+
+  const slotName = (code) => { const f = SLOTS.find((x) => x[0] === code); return f ? f[1] : "Unplaced"; };
+  const mapGo = (kind, key, text, cls) => el("button", { class: "mp-go" + (cls ? " " + cls : ""), type: "button", text: text, onclick: () => MAP.select(kind, key) });
+  const mapList = (items) => { const ul = el("ul", { class: "mp-list" }); items.forEach((it) => ul.append(el.apply(null, ["li", {}].concat(it)))); return ul; };
+  const quoted = (l) => [el("span", { class: "mp-q" }, "“" + l.evidence + "”",
+                            l.turn_id === null || l.turn_id === undefined ? null : el("a", { class: "mp-src", href: "#turn-" + l.turn_id, text: (l.role ? l.role + ", " : "") + "turn " + l.turn_id }))];
+
+  function paintMapPanel(g, sel) {
+    const box = clear($("map-panel")), wide = mapWide();
+    $("map-list").setAttribute("aria-expanded", String(Boolean(g && !sel && S.mapList)));
+    if (!g || (!sel && wide && !S.mapList)) { show(box, false); return; }
+    show(box, true);
+    const cats = g.categories || [], concepts = g.concepts || [], labels = g.labels || [], core = g.core_category || {};
+    const taken = new Set(core.mapping || []), rels = (g.relations || []).filter((r) => r.type !== "abstracts_to");
+    const overview = () => { S.mapList = true; MAP.select(null, null); };
+    const back = () => el("p", { class: "mp-h" }, el("button", { class: "mp-go", type: "button", text: "← The whole map as a list", onclick: overview }));
+    if (wide) box.append(el("button", { class: "mp-close", type: "button", "aria-label": "Close", text: "×", onclick: () => { S.mapList = false; MAP.select(null, null); } }));
+    if (!sel) {
+      box.append(el("p", { class: "mp-kick", text: "The map as a list" }),
+                 el("p", { text: labels.length + " open codes → " + concepts.length + " concepts → " + cats.length + " categories" + (core.name ? " → one core category. " : ". ") +
+                                 rels.length + " relation" + (rels.length === 1 ? "" : "s") + " between categories." }));
+      if (core.name) box.append(el("p", { class: "mp-h", text: "Core category" }), mapList([[mapGo("core", "core", core.name)]]));
+      box.append(el("p", { class: "mp-h", text: "Categories" }),
+                 mapList(cats.map((c) => [el("span", { class: "mp-t slot", text: c.c6_slot || "?" }), mapGo("category", c.name, c.name)])),
+                 el("p", { class: "fine", text: wide ? "Select anything on the map or in this list. Drag to rearrange the map. Zoom with the buttons, a pinch, or Ctrl + scroll."
+                                               : "Select anything on the map or in this list. Zoom in with +, then drag the map with a finger; Fit gives the page its scrolling back." }));
+      return;
+    }
+    if (sel.kind === "core") {
+      const inn = cats.filter((c) => taken.has(c.name)), out = cats.filter((c) => !taken.has(c.name));
+      box.append(el("p", { class: "mp-kick", text: "Core category" }), el("p", { class: "mp-name core", text: core.name || "" }),
+                 el("p", { class: "fine", text: "It takes up " + inn.length + " of " + cats.length + " categories." }));
+      if (inn.length) box.append(el("p", { class: "mp-h", text: "Taken up" }), mapList(inn.map((c) => [el("span", { class: "mp-t slot", text: c.c6_slot || "?" }), mapGo("category", c.name, c.name)])));
+      if (out.length) box.append(el("p", { class: "mp-h", text: "Left outside" }), mapList(out.map((c) => [el("span", { class: "mp-t slot", text: c.c6_slot || "?" }), mapGo("category", c.name, c.name)])));
+    } else if (sel.kind === "category") {
+      const c = cats.find((x) => x.name === sel.key) || { name: sel.key, concepts: [] };
+      const mine = rels.filter((r) => r.from === c.name || r.to === c.name);
+      box.append(el("p", { class: "mp-kick" }, el("span", { class: "sw sw-" + (c.c6_slot || "x") }), "Category · " + (c.c6_slot || "?") + " " + slotName(c.c6_slot)),
+                 el("p", { class: "mp-name", text: c.name }));
+      if (core.name) box.append(el("p", { class: "fine", text: taken.has(c.name) ? "Taken up by the core category." : "Left outside the core category." }));
+      box.append(el("p", { class: "mp-h", text: "Concepts (" + (c.concepts || []).length + ")" }), mapList((c.concepts || []).map((cn) => [mapGo("concept", cn, cn)])));
+      if (mine.length) {
+        box.append(el("p", { class: "mp-h", text: "Relations (" + mine.length + ")" }),
+                   mapList(mine.map((r) => {
+                     const outgoing = r.from === c.name, other = outgoing ? r.to : r.from;
+                     return [el("span", { class: "mp-t", text: outgoing ? r.type + " →" : "← " + r.type }), mapGo("category", other, other),
+                             r.evidence ? el("span", { class: "mp-q", text: "“" + r.evidence + "”" }) : null];
+                   })));
+      }
+    } else if (sel.kind === "concept") {
+      const c = concepts.find((x) => x.concept === sel.key) || { concept: sel.key }, parents = cats.filter((x) => (x.concepts || []).includes(sel.key));
+      const ids = labels.map((l, i) => (l.concept === sel.key ? i : -1)).filter((i) => i >= 0), attrs = Object.entries(c.attributes || {}).filter((kv) => kv[1]);
+      box.append(el("p", { class: "mp-kick" }, el("span", { class: "sw dot sw-" + ((parents[0] || {}).c6_slot || "x") }), "Concept · " + ids.length + " open code" + (ids.length === 1 ? "" : "s")),
+                 el("p", { class: "mp-name", text: c.concept }));
+      if (parents.length) box.append(el.apply(null, ["p", { class: "fine" }, "Under "].concat(parents.map((x, i) => [i ? ", " : null, mapGo("category", x.name, x.name)]).flat())));
+      else box.append(el("p", { class: "fine", text: "No category took this concept in." }));
+      if (attrs.length) {
+        const table = el("table", { class: "mp-attr" });
+        attrs.forEach((kv) => table.append(el("tr", {}, el("td", { text: kv[0].replace(/_/g, " ") }), el("td", { text: String(kv[1]) }))));
+        box.append(table);
+      }
+      box.append(el("p", { class: "mp-h", text: "Open codes behind it" }), mapList(ids.map((i) => [mapGo("code", i, labels[i].label, "code")].concat(quoted(labels[i])))));
+    } else if (sel.kind === "code") {
+      const l = labels[sel.key];
+      if (!l) return;
+      box.append(el("p", { class: "mp-kick" }, el("span", { class: "sw pen" }), "Open code"), el("p", { class: "mp-name code", text: l.label }),
+                 el.apply(null, ["p", {}].concat(quoted(l))));
+      if (l.concept) box.append(el("p", { class: "fine" }, "Under the concept ", mapGo("concept", l.concept, l.concept)));
+    }
+    box.append(back());
+    box.scrollTop = 0;
+    if (wide) MAP.reveal(box.offsetWidth);
   }
 
   function paintAll(g, rubric) {                   // a finished coding, drawn in one go (used after a run started in chat)

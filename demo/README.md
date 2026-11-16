@@ -1,6 +1,6 @@
 # demo/: the agent with the post-trained model, by invitation
 
-A small web app that runs [`../agent/`](../agent/) with the post-trained open-coding model at level 1. Visitors paste interview text and a research focus, watch the three levels come in, compare the post-trained model with the untrained base model on their own text, and ask the agent about the result.
+A small web app that runs [`../agent/`](../agent/) with the post-trained open-coding model at level 1. Visitors paste interview text and a research focus, watch the three levels come in, compare the post-trained model with the untrained base model on their own text, see the finished coding as a map (core category in the middle, categories around it with their concepts and open codes, typed relations as arrows), and ask the agent about the result.
 
 Standard library only. One process, no database.
 

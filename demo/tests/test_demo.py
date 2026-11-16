@@ -154,9 +154,15 @@ class DemoTest(unittest.TestCase):
         self.assertIn("default-src 'none'", res.getheader("Content-Security-Policy"))
         for secret in (b"opencoding", b"127.0.0.1", b"/v1"):     # the public page names no model and no endpoint
             self.assertNotIn(secret, page)
+        for path in ("/app.js", "/map.js", "/style.css"):         # every file the page asks for is there
+            res, body = c.request("GET", path, raw=True)
+            self.assertEqual(res.status, 200, path)
+            self.assertIn(path.encode(), page)
+            for secret in (b"opencoding", b"127.0.0.1", b"/v1"):
+                self.assertNotIn(secret, body)
         self.assertEqual(c.request("GET", "/api/config")[1]["auth"], {"email": True, "github": True})
         for path in ("/../server.py", "/server.py", "/.env", "/access.json", "/web/../access.json"):
-            self.assertEqual(c.request("GET", path)[0], 401, path)       # only the three page files are ever served
+            self.assertEqual(c.request("GET", path)[0], 401, path)       # only the page's own files are ever served
 
     def test_email_code_only_for_listed_addresses(self):
         c = Client(self.port)

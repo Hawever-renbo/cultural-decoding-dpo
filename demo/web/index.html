@@ -145,6 +145,24 @@
             <div><h3>Storyline</h3><div id="storyline"></div></div>
             <div><h3>Propositions <span class="hint">each stated so it can fail</span></h3><ol id="propositions"></ol></div>
           </div>
+          <div class="map" id="map" hidden>
+            <header class="map-head">
+              <h3>The coding as a map <span class="hint">core in the middle, categories around it, their concepts and codes outside</span></h3>
+              <div class="map-tools">
+                <button class="btn link" type="button" id="map-out" aria-label="Zoom out">&minus;</button>
+                <button class="btn link" type="button" id="map-in" aria-label="Zoom in">+</button>
+                <button class="btn link" type="button" id="map-fit">Fit</button>
+                <button class="btn link" type="button" id="map-list" aria-expanded="false">List</button>
+              </div>
+            </header>
+            <div class="map-body">
+              <div class="map-plate">
+                <canvas id="map-canvas" role="img" aria-label="Map of the coding. The List button opens the same content as text."></canvas>
+              </div>
+              <div class="map-panel" id="map-panel" aria-live="polite" hidden></div>
+            </div>
+            <ul class="mp-legend map-key" id="map-legend"></ul>
+          </div>
         </section>
 
         <section class="sec" id="sec-decode" hidden>
@@ -173,6 +191,7 @@
   </div>
 </div>
 
+<script src="/map.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

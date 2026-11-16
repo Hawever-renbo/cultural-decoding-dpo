@@ -47,7 +47,8 @@ from anthro_agent.store import RUN_ID_RE, RunStore, Session  # noqa: E402
 from anthro_agent.tools import ToolContext, build_registry  # noqa: E402
 
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"), "/index.html": ("index.html", "text/html; charset=utf-8"),
-          "/app.js": ("app.js", "text/javascript; charset=utf-8"), "/style.css": ("style.css", "text/css; charset=utf-8")}
+          "/app.js": ("app.js", "text/javascript; charset=utf-8"), "/map.js": ("map.js", "text/javascript; charset=utf-8"),
+          "/style.css": ("style.css", "text/css; charset=utf-8")}
 CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; "
        "form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
 SESSION_TTL = 7 * 24 * 3600
