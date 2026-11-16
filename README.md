@@ -26,7 +26,17 @@ The agent does not let the model that codes judge its own coding: rounds are ran
 
 [`demo/`](demo/) is a small web app that puts the two parts together. Paste interview text and a research focus, watch the three levels come in, read the post-trained model next to the untrained base model on your own text, see the finished coding as a map, and ask the agent about the result.
 
-The demo is **open by invitation**. It is not a public site: it needs the project's own GPU machine, which serves the post-trained model, and is started for invited people. To use it, [request access](https://github.com/Hawever-renbo/cultural-decoding-dpo/issues/new?template=demo-access.yml) with your GitHub username, or contact the repository owner. You will get a link and a way to sign in (GitHub, or a code sent to your email). The machine is not on around the clock; when the post-trained model is off, the page says so.
+The demo is **open by invitation**. To use it, please contact the repository owner ([request access](https://github.com/Hawever-renbo/cultural-decoding-dpo/issues/new?template=demo-access.yml)).
+
+![The coded page: an interview transcript with highlighted statements, an open code in the margin beside each one, the base model's label underneath, and a scorecard comparing the post-trained model with the base model](demo/screenshots/coded-page.jpg)
+
+*Level 1. Each statement is highlighted and its open code is written in the margin; the untrained base model's label for the same statement sits underneath. A red underline marks a word the speaker did not say.*
+
+![The coding as a map: the core category in the middle, categories around it, their concepts and open codes outside, relations drawn as arrows](demo/screenshots/map.jpg)
+
+*The finished coding as a map. The core category is in the middle, the categories stand around it (dashed when the core does not take them up), each with its concepts and the open codes behind them; arrows are the relations between categories.*
+
+Both screens show the synthetic example interview that ships with the agent.
 
 ## The task
 
