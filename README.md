@@ -32,9 +32,9 @@ The demo is **open by invitation**. To use it, please contact the repository own
 
 *Level 1. Each statement is highlighted and its open code is written in the margin; the untrained base model's label for the same statement sits underneath. A red underline marks a word the speaker did not say.*
 
-![The coding as a map: the core category in the middle, categories around it, their concepts and open codes outside, relations drawn as arrows](demo/screenshots/map.jpg)
+![The decoding section: the core category read in seven layers, from surface to symbolic meaning, followed by a counter-example](demo/screenshots/decoding.jpg)
 
-*The finished coding as a map. The core category is in the middle, the categories stand around it (dashed when the core does not take them up), each with its concepts and the open codes behind them; arrows are the relations between categories.*
+*Decoding. A thick-description reading of the core category, layer by layer: from what happens on the surface, through its functional, emotional, social and cultural sides, to its cultural logic and symbolic meaning, closed by a counter-example. It may quote only what was said.*
 
 Both screens show the synthetic example interview that ships with the agent.
 
